@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Studio Doble A: diseños web y apps de turnos para negocios en Buenos Aires."><meta name="theme-color" content="#f3eee6">
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Studio Doble A: diseños web y apps de turnos para negocios."><meta name="theme-color" content="#f3eee6">
 <title>Studio Doble A</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +42,8 @@ p{margin:0}
 .mark i:first-child{background:var(--ink)}
 .mark i:last-child{box-shadow:0 0 12px var(--glow)}
 .logo span{font-weight:600}
+.logo{white-space:nowrap}
+@media (max-width:420px){.nav .btn{font-size:12px;padding:8px 11px}.nav .logo{font-size:17px;gap:8px}}
 
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(243,238,230,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;gap:24px;padding-block:14px}
@@ -78,8 +80,13 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 
 
 /* abanico de proyectos inclinados */
-.about{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:center}
-.about .intro{font-size:clamp(22px,2.4vw,32px);line-height:1.25;letter-spacing:-.01em;color:var(--muted);font-weight:500}
+.about{display:block}
+.about > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 56px;align-items:end}
+.about .label{grid-column:1/-1}
+.about .intro{max-width:30ch}
+.about .svc-list{margin-top:0}
+@media (max-width:760px){.about > div{grid-template-columns:1fr}}
+.about .intro{font-size:clamp(24px,3.2vw,40px);line-height:1.25;letter-spacing:-.01em;color:var(--muted);font-weight:500}
 .about .intro b{color:var(--ink);font-weight:500}
 .about .intro em{font-style:normal;color:var(--spark)}
 .svc-list{margin-top:36px;display:flex;flex-direction:column;gap:6px;font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
@@ -340,7 +347,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 <main id="inicio">
   <section class="hero">
     <div class="wrap">
-      <p class="hello"><i aria-hidden="true"></i><span><b>Studio Doble A</b> · Diseño web para negocios en Buenos Aires</span></p>
+      <p class="hello"><i aria-hidden="true"></i><span><b>Studio Doble A</b> · Diseño web para negocios</span></p>
       <div class="big">
         <h1><span>Diseño web</span><span class="dim">creativo.</span></h1>
         <span class="tagp r" aria-hidden="true">Barberías</span>
@@ -372,7 +379,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
         <p class="intro" style="margin-top:18px"><b>Diseño webs y apps</b> que se ven bien, se entienden rápido y le traen <em>clientes</em> a tu negocio, en la compu y en el celular.</p>
         <div class="svc-list"><span>↘ Lo que hago</span>Diseño web · Apps de turnos<br>Tiendas online · Redes sociales</div>
       </div>
-      <div class="fan" id="fan" aria-label="Algunos de mis diseños"></div>
     </div>
   </section>
 
@@ -479,7 +485,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 <footer>
   <div class="wrap">
     <a class="logo" href="#inicio" style="font-size:17px"><span class="mark" aria-hidden="true"><i></i><b></b><i></i></span>Studio <span>Doble A</span></a>
-    <span>Diseño web y apps de turnos para negocios · Buenos Aires, Argentina</span>
+    <span>Diseño web y apps de turnos para negocios · Trabajo a distancia</span>
   </div>
 </footer>
 
@@ -541,7 +547,7 @@ $("filters").innerHTML = CATS.map(([k,l],i)=>{
 // tarjetas
 // abanico
 const FAN = ["sur","nacar","vida","verdant","altura"];
-$("fan").innerHTML = FAN.map((id,k)=>{ const d = DESIGNS.find(x=>x.id===id); const i = k-2;
+if($("fan")) $("fan").innerHTML = FAN.map((id,k)=>{ const d = DESIGNS.find(x=>x.id===id); const i = k-2;
   return `<a href="${d.url}" target="_blank" rel="noopener" style="--i:${i};--a:${Math.abs(i)}" aria-label="Ver demo de ${d.name}"><div class="thumb">${d.mock}</div><span>${d.name}</span></a>`; }).join("");
 
 $("grid").innerHTML = DESIGNS.map(d=>`
