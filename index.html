@@ -105,7 +105,10 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 /* aparecer al bajar: solo se oculta lo que todavía no está en pantalla */
 .rv{transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
 .rv.wait{opacity:0;transform:translateY(28px)}
-section.block .head h2{background:linear-gradient(180deg,#2a211b 40%,#7a5a47);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* letras que se llenan al bajar (como brandiful.studio): el texto arranca tenue y se pinta de izquierda a derecha, línea por línea, siguiendo el scroll */
+.fill{background:linear-gradient(var(--ink),var(--ink)) no-repeat 0 0/var(--p,200%) 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:rgba(43,29,22,.16);-webkit-box-decoration-break:slice;box-decoration-break:slice}
+.fill em,.fill b{-webkit-text-fill-color:inherit}
+.about .intro .fill em{-webkit-text-fill-color:var(--accent)}
 section.block{padding-block:72px;border-top:1px solid var(--line)}
 .head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:32px}
 .head h2{font-size:clamp(40px,6.5vw,88px);font-weight:900;margin-top:10px;line-height:.9}
@@ -337,7 +340,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 <main id="inicio">
   <section class="hero">
     <div class="wrap">
-      <p class="hello"><i aria-hidden="true"></i><span>Hola, soy <b>María de los Ángeles</b>. Diseño webs para negocios.</span></p>
+      <p class="hello"><i aria-hidden="true"></i><span><b>Studio Doble A</b> · Diseño web para negocios en Buenos Aires</span></p>
       <div class="big">
         <h1><span>Diseño web</span><span class="dim">creativo.</span></h1>
         <span class="tagp r" aria-hidden="true">Barberías</span>
@@ -449,7 +452,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
           <b id="phone">11 3833-9967</b>
           <button class="btn ghost sm" type="button" id="copyPhone">Copiar número</button>
         </div>
-        <p class="hint" style="margin-top:8px">WhatsApp · María de los Ángeles Abdala</p>
+        <p class="hint" style="margin-top:8px">WhatsApp · Studio Doble A</p>
       </div>
       <form class="form" id="form" novalidate>
         <div class="row2">
@@ -608,6 +611,20 @@ $("copyMsg").addEventListener("click", function(){ copy($("fMsg").value, this, "
   const els=[...document.querySelectorAll("section.block .head, .about > *, .card, .incl > div, .steps li, .contact > *")];
   const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.remove("wait"); io.unobserve(e.target);} }),{rootMargin:"0px 0px -8% 0px"});
   els.forEach((el,k)=>{ el.classList.add("rv"); if(el.getBoundingClientRect().top > innerHeight){ el.classList.add("wait"); el.style.transitionDelay=(k%3)*90+"ms"; io.observe(el);} });
+})();
+
+// letras que se llenan al hacer scroll
+(function(){
+  const els=[...document.querySelectorAll("section.block .head h2, .about .intro, .contact h2, .contact .lead")];
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const fills=els.map(el=>{ const sp=document.createElement("span"); sp.className="fill"; while(el.firstChild) sp.appendChild(el.firstChild); el.appendChild(sp); return sp; });
+  function tick(){
+    const vh=innerHeight, atEnd=innerHeight+scrollY>=document.documentElement.scrollHeight-4;
+    fills.forEach(sp=>{ const r=sp.parentElement.getBoundingClientRect();
+      let p=(vh*0.9 - r.top)/(vh*0.9 - vh*0.35 + r.height*0.6); p=Math.max(0,Math.min(1,p)); if(atEnd) p=1;
+      sp.style.setProperty("--p",(p*200).toFixed(1)+"%"); });
+  }
+  addEventListener("scroll",tick,{passive:true}); addEventListener("resize",tick); tick();
 })();
 sync();
 </script>
