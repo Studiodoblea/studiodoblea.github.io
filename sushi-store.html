@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sushi Store · Armá tu pedido</title>
+<meta name="description" content="Armá tu pedido de sushi: rolls, toppings, bebidas y postres. Enviálo por WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Zen+Maru+Gothic:wght@700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   TOKENS DE DISEÑO — fondo blanco tipo "flat lay" (Pinterest)
+   ========================================================= */
+:root{
+  --bg:#FFFFFF;
+  --ink:#141414;
+  --muted:#8A8580;
+  --line:#EFEBE4;
+  --rice:#F6F2EA;
+  --salmon:#F26A3D;
+  --salmon-dark:#D9542A;
+  --nori:#1D221E;
+  --wasabi:#8DB33F;
+  --soy:#3B2016;
+  --wa:#25D366;
+  --radius:22px;
+  --shadow:0 18px 40px -18px rgba(20,20,20,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{transition:background .55s ease;font-family:'Outfit',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:110px}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+
+/* ---------- Header ---------- */
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.5);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Yellowtail','Brush Script MT',cursive;font-size:30px;line-height:1}
+.hanko{width:34px;height:34px;border-radius:50%;background:var(--salmon);color:#fff;display:grid;place-items:center;font-family:'Zen Maru Gothic',sans-serif;font-size:13px;letter-spacing:0;box-shadow:0 6px 14px -6px var(--salmon)}
+.logo small{display:block;font-family:'Outfit',sans-serif;font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-size:9px;color:var(--muted);margin-top:2px}
+.cart-pill{display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600}
+.cart-pill b{background:var(--salmon);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
+
+/* ---------- Stepper ---------- */
+.steps{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.steps::-webkit-scrollbar{display:none}
+.step{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border-radius:999px;background:rgba(255,255,255,.7);font-size:14px;font-weight:500;color:var(--muted);transition:.25s}
+.step i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:12px;font-weight:700}
+.step.on{background:var(--ink);color:#fff}
+.step.on i{background:var(--salmon);color:#fff}
+.step.ok i{background:var(--wasabi);color:#fff}
+
+/* ---------- Encabezado de sección ---------- */
+.intro{padding:10px 0 0;text-align:center}
+.intro .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--salmon);font-weight:700}
+.intro h1{font-family:'Yellowtail','Brush Script MT',cursive;font-weight:400;font-size:clamp(40px,10vw,60px);line-height:1;margin:4px 0 4px}
+.intro p{color:var(--muted);max-width:520px;font-size:14px;margin:0 auto}
+.step-check .intro{text-align:left}.step-check .intro h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(30px,7vw,48px);letter-spacing:-.02em}.step-check .intro p{margin:0}
+
+/* ---------- Grilla de productos (flat lay) ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 14px;padding:26px 0 30px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);gap:34px 22px}}
+@media(min-width:960px){.grid{grid-template-columns:repeat(4,1fr)}}
+.item{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative}
+.art{width:100%;max-width:170px;aspect-ratio:1;position:relative;display:grid;place-items:center;border-radius:50%;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s}
+.art::before{content:"";position:absolute;inset:8%;border-radius:50%;background:var(--rice);transform:scale(.6);opacity:0;transition:.35s}
+.item.sel .art::before{transform:scale(1.08);opacity:1}
+.art svg{width:100%;height:100%;position:relative;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.item:hover .art svg{transform:translateY(-4px) rotate(-4deg)}
+.badge{position:absolute;top:6%;right:6%;min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--salmon);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;transform:scale(0);transition:.3s cubic-bezier(.3,1.6,.5,1);z-index:2}
+.item.sel .badge{transform:scale(1)}
+.item h3{font-size:16px;font-weight:600;margin-top:10px}
+.item .desc{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:3px;min-height:34px}
+.item .price{font-weight:700;margin-top:6px;font-size:15px}
+.item .price small{font-weight:400;color:var(--muted);font-size:12px}
+.qty{margin-top:10px;display:flex;align-items:center;gap:4px;background:var(--rice);border-radius:999px;padding:4px}
+.qty button{width:34px;height:34px;border-radius:50%;background:#fff;font-size:18px;font-weight:600;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.qty button:active{transform:scale(.92)}
+.qty span{min-width:26px;font-weight:700}
+.add{margin-top:10px;padding:10px 18px;border-radius:999px;border:1.5px solid var(--ink);font-weight:600;font-size:14px;transition:.2s}
+.add:hover{background:var(--ink);color:#fff}
+
+/* ---------- Carrusel estilo Pinterest: un producto gigante, vecinos asomando ---------- */
+.car-wrap{position:relative;margin:0 -16px}
+.car{--sw:min(62vw,340px,44vh);display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px calc(50% - var(--sw)/2) 0;-webkit-overflow-scrolling:touch}
+.car::-webkit-scrollbar{display:none}
+.slide{flex:0 0 var(--sw);aspect-ratio:1;scroll-snap-align:center;position:relative;display:grid;place-items:center;cursor:pointer;transform:scale(.66) rotate(-22deg);opacity:.8;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .5s}
+.slide.active{transform:none;opacity:1}
+.slide svg,.slide img{width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.line .mini img,.fill-row .m img,.final .inside .m img,.roller img{width:100%;height:100%;object-fit:contain}
+.slide .badge{top:8%;right:10%}
+.slide.sel .badge{transform:scale(1)}
+.arr{display:none;position:absolute;top:50%;margin-top:-24px;width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.25);font-size:20px;z-index:3}
+.arr.l{left:24px}.arr.r{right:24px}
+@media(min-width:760px){.arr{display:grid;place-items:center}.car{--sw:min(340px,36vh)}.intro h1{font-size:46px}}
+.plus-dot{width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.35);font-size:24px;font-weight:300;display:grid;place-items:center;margin:-8px auto 16px;transition:transform .2s}
+.plus-dot:active{transform:scale(.9)}
+.dots{display:flex;justify-content:center;gap:6px;margin:0 0 6px}
+.dots i{width:6px;height:6px;border-radius:9px;background:rgba(0,0,0,.15);transition:.35s}
+.dots i.on{width:22px;background:var(--ink)}
+.info{text-align:center;padding:0 0 20px}
+.info .nm{color:#6f6a64;font-size:15px;font-weight:500}
+.info .pr{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.info .pr small{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}
+.info .ds{font-size:13px;color:var(--muted);max-width:290px;margin:6px auto 18px;min-height:34px}
+.cta{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+.cta .qty{margin:0;background:rgba(255,255,255,.75)}
+.addbig{height:54px;padding:0 30px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:15px;box-shadow:0 14px 26px -14px rgba(0,0,0,.6);transition:transform .2s}
+.addbig:active{transform:scale(.96)}
+.info .anim{animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- Resumen / checkout ---------- */
+.checkout{display:grid;gap:22px;padding:26px 0 30px}
+@media(min-width:900px){.checkout{grid-template-columns:1.1fr .9fr;align-items:start}}
+.panel{border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.panel h2{font-size:18px;font-weight:700;margin-bottom:14px}
+.line{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.line:last-child{border-bottom:0}
+.line .mini{width:46px;height:46px;flex:0 0 46px}
+.line .mini svg{width:100%;height:100%}
+.line .nm{flex:1;font-size:14.5px}
+.line .nm small{display:block;color:var(--muted);font-size:12px}
+.line .pr{font-weight:600;font-size:14.5px}
+.line .x{width:28px;height:28px;border-radius:50%;background:var(--rice);font-size:14px;color:var(--muted)}
+.group-t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--salmon);font-weight:700;margin:14px 0 2px}
+.totals{margin-top:12px;padding-top:12px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;font-size:20px;font-weight:800}
+.empty{color:var(--muted);font-size:14px;padding:18px 0;text-align:center}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;font-weight:600}
+.field input,.field textarea{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff;outline:none;transition:.2s;font-size:15px}
+.field input:focus,.field textarea:focus{border-color:var(--salmon)}
+.field textarea{resize:vertical;min-height:70px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:9px 14px;border-radius:999px;background:var(--rice);font-size:14px;font-weight:500;transition:.2s}
+.chip.on{background:var(--ink);color:#fff}
+.hint{font-size:12px;color:var(--muted)}
+.err{border-color:#e0483b!important}
+
+/* ---------- Barra inferior ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom))}
+.bar .wrap{display:flex;align-items:center;gap:12px}
+.bar .tot{flex:1;line-height:1.15}
+.bar .tot small{display:block;color:var(--muted);font-size:12px}
+.bar .tot b{font-size:20px;font-weight:800}
+.btn{height:52px;padding:0 22px;border-radius:999px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn.ghost{background:var(--rice)}
+.btn.main{background:var(--salmon);color:#fff;box-shadow:0 12px 24px -12px var(--salmon)}
+.btn.main:hover{background:var(--salmon-dark)}
+.btn.wa{background:var(--wa);color:#fff;box-shadow:0 12px 24px -12px var(--wa)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.3s;z-index:60;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* =========================================================
+   OVERLAY "ENVOLVER PEDIDO" — caja negra de sushi: se llena, se tapa y se ata
+   ========================================================= */
+.overlay{position:fixed;inset:0;z-index:80;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;text-align:center}
+.overlay.show{display:flex}
+.ov-status{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--salmon);font-weight:700;height:18px}
+.ov-title{font-size:clamp(26px,6vw,40px);font-weight:800;letter-spacing:-.02em;margin:8px 0 22px}
+.stage{position:relative;width:min(340px,92vw);height:270px}
+/* Caja negra estilo packaging (inspirada en la referencia) */
+.box{position:absolute;left:50%;top:44px;width:300px;height:170px;margin-left:-150px;transform-origin:50% 100%}
+@media(max-width:340px){.box{transform:scale(.9)}}
+.box::after{content:"";position:absolute;left:4%;right:4%;bottom:-18px;height:26px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(12px);z-index:0}
+.tray{position:absolute;left:0;right:0;top:0;height:80px;clip-path:polygon(5% 0,95% 0,100% 100%,0 100%);background:linear-gradient(180deg,#030303,#1b1b1b);z-index:1}
+.tray::before{content:"";position:absolute;inset:8px 18px 0;clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);background:linear-gradient(180deg,#2a2a2a,#0d0d0d)}
+.box .items{position:absolute;left:14px;right:14px;top:16px;height:70px;display:flex;justify-content:center;align-items:flex-end;gap:2px;z-index:2}
+.box .items .m{width:58px;height:58px;animation:drop .55s cubic-bezier(.3,1.5,.5,1) both}
+.box .items .m img,.box .items .m svg{width:100%;height:100%;object-fit:contain}
+.box .more{color:#fff;font-weight:800;font-size:13px;align-self:center}
+@keyframes drop{from{opacity:0;transform:translateY(-120px) scale(.7)}to{opacity:1;transform:none}}
+.front{position:absolute;left:0;right:0;top:80px;height:90px;border-radius:0 0 6px 6px;background:linear-gradient(180deg,#232323,#0c0c0c);z-index:3;overflow:hidden}
+.front svg{position:absolute;left:0;right:0;bottom:12px;width:100%;height:34px}
+.lid{position:absolute;left:-3px;right:-3px;top:-3px;height:116px;z-index:4;opacity:0;transform:translateY(-190px) rotate(-6deg);transition:transform .8s cubic-bezier(.3,1.35,.5,1),opacity .3s}
+.lid-top{position:absolute;left:0;right:0;top:0;height:83px;clip-path:polygon(5% 0,95% 0,100% 100%,0 100%);background:linear-gradient(160deg,#2b2b2b,#141414 60%,#0e0e0e)}
+.lid-top svg{width:100%;height:100%}
+.lid-band{position:absolute;left:0;right:0;top:83px;height:33px;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid #333;box-shadow:0 6px 10px -4px rgba(0,0,0,.6)}
+.cord{position:absolute;left:-3px;top:-3px;width:306px;height:176px;z-index:5;overflow:visible;pointer-events:none}
+.cord path,.cord circle{fill:none;stroke:#F4F1EA;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420;transition:stroke-dashoffset 1s ease}
+.stage.rolling .lid{opacity:1;transform:none}
+.stage.tied .cord path,.stage.tied .cord circle{stroke-dashoffset:0}
+.stage.done .box{animation:boxPop .6s cubic-bezier(.3,1.5,.5,1)}
+@keyframes boxPop{40%{transform:scale(1.05) rotate(-2deg)}100%{transform:none}}
+.ov-actions{display:flex;flex-direction:column;gap:10px;margin-top:26px;width:min(340px,88vw);opacity:0;transform:translateY(10px);transition:.4s .2s}
+.ov-actions.show{opacity:1;transform:none}
+.ov-sum{font-size:14px;color:var(--muted);margin-top:4px}
+/* ---------- Ajuste para celulares: que el producto, precio y botón entren en una sola pantalla ---------- */
+@media(max-width:600px),(max-height:780px){
+  .logo{font-size:26px}.hanko{width:30px;height:30px;font-size:12px}
+  .step{padding:5px 12px 5px 5px;font-size:13px}.step i{width:22px;height:22px}
+  .intro .kicker{display:none}
+  .intro h1{font-size:38px}
+  .intro p{font-size:13px}
+  .plus-dot{width:40px;height:40px;font-size:22px;margin:0 auto 6px}
+  .info{padding-bottom:8px}
+  .info .nm{font-size:14px}
+  .info .pr{font-size:30px}
+  .info .ds{margin:2px auto 10px;min-height:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:92%}
+  .addbig{height:48px}
+  .cta .qty button{width:32px;height:32px}
+  .bar{padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+  .btn{height:48px}
+  body{padding-bottom:90px}
+}
+</style>
+</head>
+<body>
+
+<!-- Definiciones SVG compartidas (sombras y degradés) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.2"/></filter>
+    <radialGradient id="bowl" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E6E0"/></radialGradient>
+    <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#cfe5f7"/><stop offset=".45" stop-color="#f4f9fd"/><stop offset="1" stop-color="#b9d6ee"/></linearGradient>
+    <linearGradient id="amber" x1="0" x2="1"><stop offset="0" stop-color="#5a2a08"/><stop offset=".4" stop-color="#a8560f"/><stop offset="1" stop-color="#4a2006"/></linearGradient>
+    <linearGradient id="can" x1="0" x2="1"><stop offset="0" stop-color="#9e0f17"/><stop offset=".4" stop-color="#e3202a"/><stop offset="1" stop-color="#8d0c13"/></linearGradient>
+    <linearGradient id="tea" x1="0" x2="1"><stop offset="0" stop-color="#4f7a27"/><stop offset=".4" stop-color="#94c457"/><stop offset="1" stop-color="#456d22"/></linearGradient>
+  </defs>
+</svg>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="logo"><span class="hanko">寿司</span><div>Sushi Store<small>Delivery &amp; Take away</small></div></div>
+      <button class="cart-pill" id="cartPill" aria-label="Ver pedido">Pedido <b id="cartCount">0</b></button>
+    </div>
+    <nav class="steps" id="steps"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <div class="kicker" id="kicker"></div>
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+  </section>
+  <section id="view"></section>
+</main>
+
+<!-- Barra inferior con total y navegación -->
+<div class="bar">
+  <div class="wrap">
+    <button class="btn ghost" id="prevBtn" aria-label="Paso anterior">←</button>
+    <div class="tot"><small id="barInfo">0 productos</small><b id="barTotal">$0</b></div>
+    <button class="btn main" id="nextBtn">Siguiente →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Overlay de envoltorio -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Envolviendo pedido">
+  <div class="ov-status" id="ovStatus">Preparando</div>
+  <div class="ov-title" id="ovTitle">Armando tu roll…</div>
+  <div class="stage" id="stage"></div>
+  <div class="ov-sum" id="ovSum"></div>
+  <div class="ov-actions" id="ovActions">
+    <button class="btn wa" id="sendWa">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+      Enviar pedido por WhatsApp
+    </button>
+    <button class="btn ghost" id="backEdit">Volver a editar</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN DEL NEGOCIO
+   Reemplazá el número por el WhatsApp real del local
+   (formato internacional sin + ni espacios: 549 + área + número)
+   ========================================================= */
+const WHATSAPP = '5491100000000';
+const NEGOCIO  = 'SUSHI STORE';
+
+/* =========================================================
+   GENERADORES DE ILUSTRACIONES SVG (vista cenital, estilo flat lay)
+   ========================================================= */
+
+// Generador pseudoaleatorio con semilla: mismas texturas en cada render
+function rng(seed){ return () => (seed = (seed * 9301 + 49297) % 233280) / 233280; }
+
+// Granos de arroz dentro de un anillo (rMin–rMax)
+function grains(r1, r2, n, seed, color = '#fff'){
+  const R = rng(seed); let s = '';
+  for(let i = 0; i < n; i++){
+    const a = R() * Math.PI * 2, r = r1 + R() * (r2 - r1);
+    const x = (Math.cos(a) * r).toFixed(1), y = (Math.sin(a) * r).toFixed(1);
+    s += `<ellipse cx="${x}" cy="${y}" rx="2.6" ry="1.4" transform="rotate(${(R()*180).toFixed(0)} ${x} ${y})" fill="${color}" stroke="#E2DBCB" stroke-width=".4"/>`;
+  }
+  return s;
+}
+
+// Semillas de sésamo sobre el arroz exterior
+function sesame(r1, r2, n, seed){
+  const R = rng(seed); let s = '';
+  for(let i = 0; i < n; i++){
+    const a = R() * Math.PI * 2, r = r1 + R() * (r2 - r1);
+    const x = (Math.cos(a) * r).toFixed(1), y = (Math.sin(a) * r).toFixed(1);
+    const c = R() > .5 ? '#2a2420' : '#D9C08A';
+    s += `<ellipse cx="${x}" cy="${y}" rx="1.3" ry=".7" transform="rotate(${(R()*180).toFixed(0)} ${x} ${y})" fill="${c}"/>`;
+  }
+  return s;
+}
+
+// Piezas de relleno (palta, salmón, atún, queso, pepino, langostino, kani)
+function piece(type, x, y, w, h, rot){
+  const t = `transform="translate(${x} ${y}) rotate(${rot})"`;
+  switch(type){
+    case 'avocado':  return `<g ${t}><path d="M${-w/2} ${h/2} Q0 ${-h} ${w/2} ${h/2} Z" fill="#A9CC52" stroke="#5E8A2B" stroke-width="2"/></g>`;
+    case 'salmon':   return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="3" fill="#F47B44"/><path d="M${-w/2+3} ${-h/2+3} l${w-6} ${h-6} M${-w/2+3} ${h/2-6} l${w/2} ${-h/2}" stroke="#FFD1B8" stroke-width="1.4" opacity=".8"/></g>`;
+    case 'tuna':     return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="3" fill="#C8304A"/><rect x="${-w/2+2}" y="${-h/2+2}" width="${w/3}" height="${h-4}" rx="2" fill="#DE5068" opacity=".6"/></g>`;
+    case 'cheese':   return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="4" fill="#FDFBF5" stroke="#E7E1D2" stroke-width="1"/></g>`;
+    case 'cucumber': return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" fill="#C8E58C" stroke="#3E7A28" stroke-width="2.2"/></g>`;
+    case 'shrimp':   return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${h/2}" fill="#EDB466"/><circle cx="${-w/5}" cy="-1" r="1.4" fill="#C9832F"/><circle cx="${w/6}" cy="2" r="1.2" fill="#C9832F"/><circle cx="2" cy="-3" r="1" fill="#F7D7A0"/></g>`;
+    case 'kani':     return `<g ${t}><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" fill="#FBF4EE"/><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h/3}" rx="2" fill="#E2463A"/></g>`;
+  }
+  return '';
+}
+
+// Distribución de rellenos según cantidad
+const LAYOUT = {
+  1:[[0,2,26,22,0]],
+  2:[[-8,0,16,26,0],[9,1,16,24,0]],
+  3:[[-9,-6,16,14,0],[9,-6,16,14,0],[0,9,18,13,0]],
+  4:[[-8,-8,15,15,0],[8,-8,15,15,0],[-8,8,15,15,0],[8,8,15,15,0]]
+};
+
+// Roll completo visto desde arriba
+function rollSVG(a, seed = 7){
+  const { outer, fill = [], top } = a;
+  let s = `<svg viewBox="-56 -56 112 112" aria-hidden="true"><circle cx="4" cy="7" r="44" fill="rgba(0,0,0,.18)" filter="url(#blur)"/>`;
+  let inner = 24; // radio del área de relleno
+
+  if(outer === 'nori'){
+    s += `<circle r="45" fill="#1C211D"/><circle r="45" fill="none" stroke="#2E3530" stroke-width="1.5"/>`;
+    s += `<circle r="39" fill="#F4EFE5"/>` + grains(24, 37, 50, seed);
+    inner = 21;
+  } else {
+    // Exterior: arroz con sésamo o lámina de salmón
+    if(outer === 'salmon'){
+      s += `<circle r="45" fill="#F47A43"/>`;
+      for(let i = 0; i < 7; i++) s += `<path d="M-44 ${-30+i*10} Q0 ${-38+i*10} 44 ${-26+i*10}" stroke="#FFD0B5" stroke-width="1.6" fill="none" opacity=".75"/>`;
+      s += `<circle r="38" fill="#F4EFE5"/>` + grains(27, 36, 34, seed);
+    } else {
+      s += `<circle r="45" fill="#F4EFE5"/>` + grains(27, 43, 60, seed) + sesame(28, 42, 34, seed + 3);
+    }
+    s += `<circle r="27" fill="#1C211D"/><circle r="24.5" fill="#F4EFE5"/>`;
+    inner = 22;
+  }
+
+  // Relleno central
+  const L = LAYOUT[Math.min(fill.length, 4)] || [];
+  const k = inner / 20;
+  fill.slice(0, 4).forEach((f, i) => { const [x,y,w,h,r] = L[i]; s += piece(f, x*k, y*k, w*k, h*k, r); });
+
+  // Toppings decorativos
+  if(top === 'scallion'){
+    const R = rng(seed + 9);
+    for(let i = 0; i < 9; i++){ const x = (R()-.5)*30, y = -8 + (R()-.5)*22; s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="4" ry="1.3" transform="rotate(${(R()*180).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="none" stroke="#5BB035" stroke-width="1.8"/>`; }
+  }
+  if(top === 'tobiko'){
+    const R = rng(seed + 4);
+    for(let i = 0; i < 40; i++){ const a = R()*Math.PI*2, r = R()*15; s += `<circle cx="${(Math.cos(a)*r).toFixed(1)}" cy="${(-10+Math.sin(a)*r*.7).toFixed(1)}" r="1.9" fill="${R()>.3?'#F26A1E':'#FF9A3D'}"/>`; }
+  }
+  if(top === 'sauce'){
+    s += `<path d="M-34 -14 q6 -8 12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="#F2A86A" stroke-width="3.2" stroke-linecap="round"/>`;
+  }
+  return s + '</svg>';
+}
+
+// Bowl de salsa / topping visto desde arriba
+function bowlSVG(a, seed = 5){
+  const { kind, color } = a; const R = rng(seed);
+  let s = `<svg viewBox="-56 -56 112 112" aria-hidden="true"><circle cx="3" cy="6" r="40" fill="rgba(0,0,0,.16)" filter="url(#blur)"/><circle r="40" fill="url(#bowl)" stroke="#E4E0D8"/><circle r="31" fill="${color}"/>`;
+  if(kind === 'liquid') s += `<ellipse cx="-10" cy="-12" rx="10" ry="4" fill="#fff" opacity=".18" transform="rotate(-30 -10 -12)"/>`;
+  if(kind === 'paste')  s += `<circle r="15" fill="#9DCB52"/><circle r="9" cx="-2" cy="-2" fill="#B5DA73"/><circle r="4" cx="-4" cy="-4" fill="#CBE69A"/>`;
+  if(kind === 'seeds')  for(let i=0;i<70;i++){ const an=R()*6.28, r=R()*28, x=Math.cos(an)*r, y=Math.sin(an)*r; s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="2.4" ry="1.3" transform="rotate(${(R()*180)|0} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${R()>.6?'#3A322A':'#E8D6A8'}"/>`; }
+  if(kind === 'gari')   for(let i=0;i<12;i++){ const an=R()*6.28, r=R()*18, x=Math.cos(an)*r, y=Math.sin(an)*r; s += `<path d="M${x-9} ${y} q9 -10 18 0 q-9 6 -18 0Z" fill="${R()>.5?'#F59BA6':'#F8B9C0'}" transform="rotate(${(R()*180)|0} ${x} ${y})"/>`; }
+  if(kind === 'crispy') for(let i=0;i<40;i++){ const an=R()*6.28, r=R()*26, x=Math.cos(an)*r, y=Math.sin(an)*r; s += `<path d="M${x} ${y} q3 -4 6 0 q-3 2 -6 0Z" fill="${R()>.5?'#B9772F':'#E0A55A'}" stroke="#8A5320" stroke-width=".5" transform="rotate(${(R()*180)|0} ${x} ${y})"/>`; }
+  if(kind === 'dots')   for(let i=0;i<90;i++){ const an=R()*6.28, r=R()*28; s += `<circle cx="${(Math.cos(an)*r).toFixed(1)}" cy="${(Math.sin(an)*r).toFixed(1)}" r="2" fill="${R()>.4?'#F0491E':'#FF7A3A'}"/>`; }
+  if(kind === 'creamy') s += `<path d="M-14 -6 q7 -10 14 0 t14 0" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/>`;
+  if(kind === 'chili')  for(let i=0;i<30;i++){ const an=R()*6.28, r=R()*26; s += `<circle cx="${(Math.cos(an)*r).toFixed(1)}" cy="${(Math.sin(an)*r).toFixed(1)}" r="${(1+R()*1.6).toFixed(1)}" fill="#7A0F0A" opacity=".7"/>`; }
+  return s + '</svg>';
+}
+
+// Bebidas en vista frontal (como en la referencia)
+function drinkSVG(a){
+  const sh = `<ellipse cx="0" cy="50" rx="20" ry="4" fill="rgba(0,0,0,.2)" filter="url(#blur)"/>`;
+  let s = `<svg viewBox="-56 -56 112 112" aria-hidden="true">${sh}`;
+  if(a.kind === 'water') s += `<rect x="-6" y="-50" width="12" height="7" rx="2" fill="#2F6FD6"/><path d="M-6 -43 Q-15 -34 -15 -20 V44 Q-15 50 -9 50 H9 Q15 50 15 44 V-20 Q15 -34 6 -43Z" fill="url(#glass)" stroke="#a9c7e2"/><rect x="-15" y="-6" width="30" height="16" fill="#2F6FD6" opacity=".85"/><path d="M-15 18 h30 M-15 28 h30" stroke="#a9c7e2"/>`;
+  if(a.kind === 'cola')  s += `<rect x="-17" y="-38" width="34" height="88" rx="6" fill="url(#can)"/><rect x="-13" y="-42" width="26" height="6" rx="2" fill="#cfd2d6"/><path d="M-17 6 Q0 -6 17 10 V18 Q0 4 -17 16Z" fill="#fff"/><text x="0" y="-8" text-anchor="middle" font-family="Outfit" font-weight="800" font-size="9" fill="#fff" letter-spacing="1">COLA</text>`;
+  if(a.kind === 'beer')  s += `<rect x="-5" y="-52" width="10" height="5" rx="1" fill="#C9A44A"/><path d="M-4 -47 V-26 Q-14 -18 -14 -4 V46 Q-14 50 -10 50 H10 Q14 50 14 46 V-4 Q14 -18 4 -26 V-47Z" fill="url(#amber)"/><rect x="-14" y="6" width="28" height="22" fill="#F3E6C4"/><text x="0" y="21" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="7" fill="#5a2a08">LAGER</text>`;
+  if(a.kind === 'tea')   s += `<rect x="-16" y="-36" width="32" height="86" rx="6" fill="url(#tea)"/><rect x="-12" y="-40" width="24" height="6" rx="2" fill="#cfd2d6"/><circle cx="0" cy="8" r="11" fill="#F4F7EC"/><path d="M-5 10 q5 -12 10 0 q-5 5 -10 0Z" fill="#5E8A2B"/><text x="0" y="-12" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="7" fill="#fff" letter-spacing="1">緑茶</text>`;
+  return s + '</svg>';
+}
+
+// Postres vista cenital
+function dessertSVG(a, seed = 3){
+  let s = `<svg viewBox="-56 -56 112 112" aria-hidden="true"><circle cx="3" cy="6" r="42" fill="rgba(0,0,0,.15)" filter="url(#blur)"/><circle r="42" fill="url(#bowl)" stroke="#E4E0D8"/>`;
+  if(a.kind === 'mochi'){
+    [['-13','-9','#F6B8C8'],['13','-9','#CFE5A8'],['0','13','#FBF6EE']].forEach(([x,y,c]) => { s += `<circle cx="${x}" cy="${y}" r="13" fill="${c}"/><circle cx="${x-4}" cy="${y-4}" r="4" fill="#fff" opacity=".5"/>`; });
+  }
+  if(a.kind === 'cheesecake') s += `<path d="M-26 22 L4 -30 L28 18 Z" fill="#F6E3B0" stroke="#D9B66C" stroke-width="3" stroke-linejoin="round"/><path d="M-18 14 L4 -22 L20 12 Z" fill="#F7A51E" opacity=".9"/><circle cx="2" cy="0" r="1.8" fill="#2a1a0a"/><circle cx="-4" cy="6" r="1.6" fill="#2a1a0a"/><circle cx="8" cy="6" r="1.6" fill="#2a1a0a"/>`;
+  if(a.kind === 'dorayaki') s += `<circle r="30" fill="#C77A34"/><circle r="22" fill="#9C5320"/><circle r="12" fill="#8A461A" opacity=".6"/><circle cx="-8" cy="-10" r="5" fill="#fff" opacity=".12"/>`;
+  return s + '</svg>';
+}
+
+/* Fotos reales de los productos (recortadas de la imagen de referencia, sin fondo) */
+const IMG = {
+  r1:'sushi-store/img/r1.webp',
+  r2:'sushi-store/img/r2.webp',
+  r3:'sushi-store/img/r3.webp',
+  r4:'sushi-store/img/r4.webp',
+  r5:'sushi-store/img/r5.webp',
+  r6:'sushi-store/img/r6.webp',
+  r7:'sushi-store/img/r7.webp',
+  t1:'sushi-store/img/t1.webp',
+  t2:'sushi-store/img/t2.webp',
+  t3:'sushi-store/img/t3.webp',
+  t4:'sushi-store/img/t4.webp',
+  t5:'sushi-store/img/t5.webp',
+  t6:'sushi-store/img/t6.webp',
+  t7:'sushi-store/img/t7.webp',
+  t9:'sushi-store/img/t9.webp',
+  b1:'sushi-store/img/b1.webp',
+  b2:'sushi-store/img/b2.webp',
+  b3:'sushi-store/img/b3.webp'
+};
+// Dibuja cualquier producto: usa la foto si existe, si no la ilustración SVG
+function draw(item, i = 1){
+  if(IMG[item.id]) return `<img src="${IMG[item.id]}" alt="" draggable="false">`;
+  const a = item.art;
+  if(a.type === 'roll')    return rollSVG(a, i * 11 + 3);
+  if(a.type === 'bowl')    return bowlSVG(a, i * 7 + 2);
+  if(a.type === 'drink')   return drinkSVG(a);
+  if(a.type === 'dessert') return dessertSVG(a, i);
+  return '';
+}
+
+/* =========================================================
+   MENÚ — precios editables (ARS)
+   ========================================================= */
+const MENU = [
+  { key:'rolls', step:'Rolls', kicker:'Paso 1 · Rolls', title:'Rolls', sub:'Deslizá y elegí · porciones de 8 piezas', unit:'8 piezas', items:[
+    { id:'r1', name:'Tuna Maki',      desc:'Atún rojo y palta, envuelto en nori',        price:9800,  art:{type:'roll', outer:'nori',   fill:['tuna','avocado']} },
+    { id:'r2', name:'Salmon Flame',   desc:'Langostino tempura, salmón flambeado y verdeo', price:12500, art:{type:'roll', outer:'salmon', fill:['shrimp','avocado'], top:'scallion'} },
+    { id:'r3', name:'California',     desc:'Langostino, palta y pepino',            price:10200, art:{type:'roll', outer:'rice',   fill:['kani','avocado','cucumber']} },
+    { id:'r4', name:'Philadelphia',   desc:'Salmón, queso crema y palta',                price:11900, art:{type:'roll', outer:'salmon', fill:['cheese','avocado']} },
+    { id:'r5', name:'Ebi Crunch',     desc:'Langostino tempura, salmón flambeado y tobiko',   price:12900, art:{type:'roll', outer:'rice',   fill:['shrimp','cheese'], top:'tobiko'} },
+    { id:'r6', name:'Spicy Salmon',   desc:'Salmón picante, pepino y salsa sriracha',    price:12200, art:{type:'roll', outer:'salmon', fill:['salmon','cucumber'], top:'sauce'} },
+    { id:'r7', name:'Avocado Maki',   desc:'Palta y pepino en nori. Veggie',             price:7900,  art:{type:'roll', outer:'nori',   fill:['avocado']} }
+  ]},
+  { key:'toppings', step:'Toppings', kicker:'Paso 2 · Toppings y salsas', title:'Toppings', sub:'Deslizá y sumá salsas y extras', unit:'porción', items:[
+    { id:'t1', name:'Salsa de soja',  desc:'Clásica, baja en sodio',       price:500,  art:{type:'bowl', kind:'liquid', color:'#3B2016'} },
+    { id:'t2', name:'Wasabi',         desc:'Picante japonés',              price:600,  art:{type:'bowl', kind:'paste',  color:'#EEF3E3'} },
+    { id:'t3', name:'Gari',           desc:'Jengibre encurtido',           price:800,  art:{type:'bowl', kind:'gari',   color:'#FBE3E6'} },
+    { id:'t4', name:'Sésamo mix',     desc:'Blanco y negro tostado',       price:500,  art:{type:'bowl', kind:'seeds',  color:'#F2EBDD'} },
+    { id:'t5', name:'Spicy mayo',     desc:'Mayonesa picante cremosa',     price:900,  art:{type:'bowl', kind:'creamy', color:'#F4A777'} },
+    { id:'t6', name:'Cebolla crispy', desc:'Cebolla frita crocante',       price:900,  art:{type:'bowl', kind:'crispy', color:'#F3E2C4'} },
+    { id:'t7', name:'Teriyaki',       desc:'Salsa dulce de soja con sésamo', price:800, art:{type:'bowl', kind:'liquid', color:'#5A2A12'} },
+    { id:'t9', name:'Salsa chili',    desc:'Agridulce picante',            price:700,  art:{type:'bowl', kind:'chili',  color:'#D8331F'} }
+  ]},
+  { key:'bebidas', step:'Bebidas', kicker:'Paso 3 · Bebidas', title:'Bebidas', sub:'Deslizá · bien frías', unit:'unidad', items:[
+    { id:'b1', name:'Agua mineral', desc:'500 ml, con o sin gas',  price:1800, art:{type:'drink', kind:'water'} },
+    { id:'b2', name:'Coca-Cola',    desc:'Lata 354 ml',            price:2200, art:{type:'drink', kind:'cola'} },
+    { id:'b3', name:'Cerveza',      desc:'Porrón 330 ml',          price:3900, art:{type:'drink', kind:'beer'} }
+  ]},
+  { key:'postres', step:'Postres', kicker:'Paso 4 · Postres', title:'Postres', sub:'Deslizá · un final dulce', unit:'porción', items:[
+    { id:'p1', name:'Mochis x3',            desc:'Frutilla, matcha y vainilla', price:3200, art:{type:'dessert', kind:'mochi'} },
+    { id:'p2', name:'Cheesecake maracuyá',  desc:'Porción con coulis',          price:4500, art:{type:'dessert', kind:'cheesecake'} },
+    { id:'p3', name:'Dorayaki',             desc:'Pancake relleno de anko',     price:3500, art:{type:'dessert', kind:'dorayaki'} }
+  ]}
+];
+const STEPS = [...MENU.map(m => m.step), 'Envolver'];
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+const state = {
+  step: 0,
+  cart: {},                       // { idProducto: cantidad }
+  name: '', mode: 'Delivery', address: '', pay: 'Efectivo', notes: ''
+};
+const ALL = MENU.flatMap(m => m.items.map((it, i) => ({ ...it, cat: m.key, catName: m.step, unit: m.unit, idx: i })));
+const byId = id => ALL.find(x => x.id === id);
+const money = n => '$' + new Intl.NumberFormat('es-AR').format(n);
+const $ = s => document.querySelector(s);
+
+const cartItems = () => Object.entries(state.cart).filter(([, q]) => q > 0).map(([id, q]) => ({ ...byId(id), q }));
+const total = () => cartItems().reduce((t, x) => t + x.price * x.q, 0);
+const count = () => cartItems().reduce((t, x) => t + x.q, 0);
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function renderSteps(){
+  $('#steps').innerHTML = STEPS.map((s, i) =>
+    `<button class="step ${i === state.step ? 'on' : ''} ${i < state.step ? 'ok' : ''}" data-go="${i}"><i>${i < state.step ? '✓' : i + 1}</i>${s}</button>`
+  ).join('');
+}
+
+/* ---------- Carrusel por categoría (estilo app del pin de Pinterest) ---------- */
+const active = {};                         // índice visible por categoría
+
+// Color de fondo suave según el producto (como el fondo que cambia en la referencia)
+function mix(hex, p){
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255];
+  return 'rgb(' + c.map(v => Math.round(255 - (255 - v) * p)).join(',') + ')';
+}
+function tintOf(it){
+  const a = it.art;
+  if(a.type === 'roll') return { salmon:'#FDE3D4', nori:'#E7ECE4', rice:'#F6EEDB' }[a.outer];
+  if(a.type === 'bowl') return { t1:'#F3E7DC', t2:'#EAF1DD', t3:'#FCE3E6', t4:'#F4EEE2', t5:'#FDE6D6', t6:'#F6E8D4', t7:'#F1E4D8', t9:'#FCDDD6' }[it.id] || mix(a.color, .22);
+  return { water:'#E0EDF9', cola:'#FBDADB', beer:'#F5E3CC', tea:'#E4EFD5', mochi:'#FBE1EA', cheesecake:'#FDEDCB', dorayaki:'#F3DFCB' }[a.kind] || '#fff';
+}
+
+function renderCarousel(m){
+  const a = active[m.key] || 0;
+  return `<div class="car-wrap">
+      <button class="arr l" data-arr="-1" aria-label="Anterior">←</button>
+      <div class="car" id="car">${m.items.map((it, i) => {
+        const q = state.cart[it.id] || 0;
+        return `<div class="slide ${i === a ? 'active' : ''} ${q ? 'sel' : ''}" data-slide="${i}" aria-label="${it.name}"><span class="badge">${q}</span>${draw(it, i)}</div>`;
+      }).join('')}</div>
+      <button class="arr r" data-arr="1" aria-label="Siguiente">→</button>
+    </div>
+    <div class="dots" id="dots">${m.items.map((_, i) => `<i class="${i === a ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="info" id="info"></div>`;
+}
+
+// Panel inferior: botón +, nombre, precio grande y botón oscuro
+function renderInfo(){
+  const m = MENU[state.step], it = m.items[active[m.key] || 0], q = state.cart[it.id] || 0;
+  const box = $('#info'); if(!box) return;
+  box.dataset.id = it.id;
+  box.innerHTML = `<div class="anim">
+    <button class="plus-dot" data-act="plus" aria-label="Agregar ${it.name}">+</button>
+    <div class="nm">${it.name}</div>
+    <div class="pr">${money(it.price)} <small>/ ${m.unit}</small></div>
+    <p class="ds">${it.desc}</p>
+    <div class="cta">${q
+      ? `<div class="qty"><button data-act="minus" aria-label="Quitar uno">−</button><span>${q}</span><button data-act="plus" aria-label="Agregar uno">+</button></div><button class="addbig" data-arr="1">Ver otro →</button>`
+      : `<button class="addbig" data-act="plus">Agregar al pedido</button>`}</div></div>`;
+  document.body.style.background = tintOf(it);
+}
+
+// Marca el slide activo según el scroll y actualiza fondo, puntos e info
+function setActive(i, fromScroll){
+  const m = MENU[state.step]; if(!m) return;
+  i = Math.max(0, Math.min(m.items.length - 1, i));
+  const changed = (active[m.key] || 0) !== i;
+  active[m.key] = i;
+  document.querySelectorAll('.slide').forEach((el, k) => el.classList.toggle('active', k === i));
+  document.querySelectorAll('#dots i').forEach((el, k) => el.classList.toggle('on', k === i));
+  if(changed || !fromScroll) renderInfo();
+}
+function scrollToSlide(i, smooth = true){
+  const car = $('#car'); if(!car) return;
+  const sw = car.querySelector('.slide').offsetWidth;
+  car.scrollTo({ left: i * sw, behavior: smooth ? 'smooth' : 'auto' });
+}
+// Calcula el tamaño del producto según el alto disponible de la pantalla,
+// para que nombre, precio y botón siempre se vean sin hacer scroll
+function fitCarousel(){
+  const car = $('#car'); if(!car) return;
+  const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  const used = $('header').offsetHeight + $('.intro').offsetHeight + $('#dots').offsetHeight + $('#info').offsetHeight + $('.bar').offsetHeight + 14;
+  const sw = Math.max(130, Math.min(window.innerWidth * 0.62, 340, vh - used));
+  car.style.setProperty('--sw', sw + 'px');
+  scrollToSlide(active[MENU[state.step].key] || 0, false);
+}
+window.addEventListener('resize', () => fitCarousel());
+
+function setupCarousel(){
+  const car = $('#car'); if(!car) return;
+  const m = MENU[state.step];
+  renderInfo();
+  fitCarousel();
+  let raf;
+  car.addEventListener('scroll', () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const sw = car.querySelector('.slide').offsetWidth;
+      setActive(Math.round(car.scrollLeft / sw), true);
+    });
+  });
+}
+
+function renderCheckout(){
+  const items = cartItems();
+  let list = '';
+  if(!items.length){
+    list = `<div class="empty">Todavía no agregaste nada. Volvé a los pasos anteriores para armar tu pedido.</div>`;
+  } else {
+    MENU.forEach(m => {
+      const g = items.filter(x => x.cat === m.key);
+      if(!g.length) return;
+      list += `<div class="group-t">${m.step}</div>` + g.map(x => `
+        <div class="line">
+          <div class="mini">${draw(x, x.idx)}</div>
+          <div class="nm">${x.q}× ${x.name}<small>${money(x.price)} c/u · ${x.unit}</small></div>
+          <div class="pr">${money(x.price * x.q)}</div>
+          <button class="x" data-del="${x.id}" aria-label="Eliminar">✕</button>
+        </div>`).join('');
+    });
+    list += `<div class="totals"><span>Total</span><span>${money(total())}</span></div>`;
+    if(state.mode === 'Delivery') list += `<p class="hint" style="margin-top:6px">El costo de envío se confirma por WhatsApp.</p>`;
+  }
+
+  const chips = (key, opts) => `<div class="chips">${opts.map(o => `<button class="chip ${state[key] === o ? 'on' : ''}" data-chip="${key}" data-val="${o}">${o}</button>`).join('')}</div>`;
+
+  return `<div class="checkout">
+    <div class="panel"><h2>Tu pedido</h2>${list}</div>
+    <div class="panel">
+      <h2>Datos de entrega</h2>
+      <div class="field"><label for="fName">Nombre</label><input id="fName" value="${esc(state.name)}" placeholder="¿A nombre de quién?" autocomplete="name"></div>
+      <div class="field"><label>Modalidad</label>${chips('mode', ['Delivery', 'Take away'])}</div>
+      ${state.mode === 'Delivery' ? `<div class="field"><label for="fAddr">Dirección</label><input id="fAddr" value="${esc(state.address)}" placeholder="Calle, número, piso, barrio" autocomplete="street-address"></div>` : ''}
+      <div class="field"><label>Forma de pago</label>${chips('pay', ['Efectivo', 'Transferencia', 'Mercado Pago'])}</div>
+      <div class="field"><label for="fNotes">Notas</label><textarea id="fNotes" placeholder="Sin palta, timbre roto, palitos extra…">${esc(state.notes)}</textarea></div>
+    </div>
+  </div>`;
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
+
+function render(){
+  renderSteps();
+  const last = state.step === STEPS.length - 1;
+  if(!last){
+    const m = MENU[state.step];
+    $('#kicker').textContent = m.kicker; $('#title').textContent = m.title; $('#subtitle').textContent = m.sub;
+    document.body.classList.remove('step-check');
+    $('#view').innerHTML = renderCarousel(m);
+    setupCarousel();
+  } else {
+    $('#kicker').textContent = 'Paso 5 · Envolver';
+    $('#title').textContent = 'Revisá y envolvé';
+    $('#subtitle').textContent = 'Chequeá tu pedido, completá tus datos y lo envolvemos en un roll para mandarlo por WhatsApp.';
+    document.body.classList.add('step-check');
+    document.body.style.background = '#fff';
+    $('#view').innerHTML = renderCheckout();
+  }
+  renderBar();
+}
+
+function renderBar(){
+  const c = count(), last = state.step === STEPS.length - 1;
+  $('#cartCount').textContent = c;
+  $('#barInfo').textContent = c === 1 ? '1 producto' : `${c} productos`;
+  $('#barTotal').textContent = money(total());
+  $('#prevBtn').style.visibility = state.step === 0 ? 'hidden' : 'visible';
+  const nb = $('#nextBtn');
+  nb.innerHTML = last ? '🍣 Envolver pedido' : (state.step === STEPS.length - 2 ? 'Ver pedido →' : 'Siguiente →');
+  nb.disabled = last && c === 0;
+}
+
+// Actualiza badge del slide y panel de info sin re-renderizar todo
+function refreshItem(id){
+  const m = MENU[state.step]; if(!m) return;
+  const i = m.items.findIndex(x => x.id === id), q = state.cart[id] || 0;
+  const sl = document.querySelectorAll('.slide')[i];
+  if(sl){ sl.classList.toggle('sel', q > 0); sl.querySelector('.badge').textContent = q; }
+  renderInfo(); renderBar();
+}
+
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+document.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]');
+  if(go){ goTo(+go.dataset.go); return; }
+
+  const sl = e.target.closest('[data-slide]');
+  if(sl){ scrollToSlide(+sl.dataset.slide); return; }
+
+  const arr = e.target.closest('[data-arr]');
+  if(arr){ const m = MENU[state.step]; scrollToSlide(Math.min(m.items.length - 1, Math.max(0, (active[m.key] || 0) + +arr.dataset.arr))); return; }
+
+  const act = e.target.closest('[data-act]');
+  if(act){
+    const id = act.closest('[data-id]').dataset.id;
+    const q = state.cart[id] || 0;
+    state.cart[id] = Math.max(0, q + (act.dataset.act === 'plus' ? 1 : -1));
+    if(act.dataset.act === 'plus' && q === 0) toast(`${byId(id).name} agregado`);
+    refreshItem(id); return;
+  }
+
+  const del = e.target.closest('[data-del]');
+  if(del){ delete state.cart[del.dataset.del]; render(); return; }
+
+  const chip = e.target.closest('[data-chip]');
+  if(chip){ saveFields(); state[chip.dataset.chip] = chip.dataset.val; render(); return; }
+});
+
+// Guarda lo escrito en el formulario antes de re-renderizar
+function saveFields(){
+  if($('#fName'))  state.name = $('#fName').value.trim();
+  if($('#fAddr'))  state.address = $('#fAddr').value.trim();
+  if($('#fNotes')) state.notes = $('#fNotes').value.trim();
+}
+document.addEventListener('input', saveFields);
+
+function goTo(i){
+  saveFields();
+  state.step = Math.max(0, Math.min(STEPS.length - 1, i));
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('#prevBtn').onclick = () => goTo(state.step - 1);
+$('#cartPill').onclick = () => goTo(STEPS.length - 1);
+$('#nextBtn').onclick = () => {
+  if(state.step < STEPS.length - 1){ goTo(state.step + 1); return; }
+  saveFields();
+  // Validaciones mínimas
+  if(!count()){ toast('Agregá al menos un producto'); return; }
+  if(!state.name){ $('#fName').classList.add('err'); $('#fName').focus(); toast('Falta tu nombre'); return; }
+  if(state.mode === 'Delivery' && !state.address){ $('#fAddr').classList.add('err'); $('#fAddr').focus(); toast('Falta la dirección'); return; }
+  wrapOrder();
+};
+
+let tt;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+/* =========================================================
+   ANIMACIÓN "ENVOLVER PEDIDO"
+   1) Los productos caen sobre el arroz y el nori
+   2) La esterilla enrolla el pedido
+   3) Aparece el roll cortado con el pedido adentro
+   ========================================================= */
+function wrapOrder(){
+  const items = cartItems();
+  const ov = $('#overlay'), st = $('#stage');
+  const shown = items.slice(0, 4);
+  const minis = shown.map((x, i) => `<div class="m" style="animation-delay:${.15 + i * .15}s">${draw(x, x.idx)}</div>`).join('') + (items.length > 4 ? `<div class="more">+${items.length - 4}</div>` : '');
+
+  st.className = 'stage';
+  st.innerHTML = `
+    <div class="box">
+      <div class="tray"></div>
+      <div class="items">${minis}</div>
+      <div class="front">${boxIcons()}</div>
+      <div class="lid"><div class="lid-top">${lidArt()}</div><div class="lid-band"></div></div>
+      <svg class="cord" viewBox="0 0 306 176" aria-hidden="true">
+        <path d="M226 0 L252 86 L252 176"/>
+        <circle cx="239" cy="43" r="9"/>
+        <path d="M239 52 q-10 14 -24 16 M239 52 q8 14 20 20"/>
+      </svg>
+    </div>`;
+
+  $('#ovStatus').textContent = 'Paso 1 de 3';
+  $('#ovTitle').textContent = 'Armando tu caja…';
+  $('#ovSum').textContent = '';
+  $('#ovActions').classList.remove('show');
+  ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  const delay = 900 + shown.length * 150;
+  setTimeout(() => { st.classList.add('rolling'); $('#ovStatus').textContent = 'Paso 2 de 3'; $('#ovTitle').textContent = 'Cerrando la caja…'; }, delay);
+  setTimeout(() => { st.classList.add('tied'); $('#ovStatus').textContent = 'Paso 3 de 3'; $('#ovTitle').textContent = 'Atando el envoltorio…'; }, delay + 850);
+  setTimeout(() => {
+    st.classList.add('done');
+    $('#ovStatus').textContent = 'Listo';
+    $('#ovTitle').textContent = '¡Pedido envuelto!';
+    $('#ovSum').textContent = `${count()} productos · ${money(total())}`;
+    $('#ovActions').classList.add('show');
+  }, delay + 1900);
+}
+
+// Tapa: logo SUSHI STORE en letras espaciadas, como la caja de referencia
+function lidArt(){
+  return `<svg viewBox="0 0 306 83" aria-hidden="true">
+    <text x="128" y="50" text-anchor="middle" font-family="Outfit,sans-serif" font-weight="300" font-size="25" letter-spacing="9" fill="#F4F1EA">SUSHI</text>
+    <text x="128" y="66" text-anchor="middle" font-family="Outfit,sans-serif" font-weight="500" font-size="7.5" letter-spacing="5.5" fill="#9a958c">S T O R E</text>
+    <circle cx="44" cy="44" r="12" fill="none" stroke="#F26A3D" stroke-width="1.4"/><text x="44" y="48" text-anchor="middle" font-size="10" fill="#F26A3D" font-family="'Zen Maru Gothic',sans-serif">寿</text>
+  </svg>`;
+}
+
+// Frente: fila de íconos de línea blancos (roll, nigiri, bowl, botella, palitos…)
+function boxIcons(){
+  const st = 'fill="none" stroke="#E9E5DC" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"';
+  const icons = [
+    x => `<circle cx="${x}" cy="17" r="11" ${st}/><circle cx="${x}" cy="17" r="6" ${st}/><path d="M${x-2} 15 l4 4" ${st}/>`,
+    x => `<path d="M${x-13} 22 q13 -16 26 0 z" ${st}/><path d="M${x-12} 22 h24 v5 h-24 z" ${st}/>`,
+    x => `<path d="M${x-12} 14 h24 q-2 14 -12 14 q-10 0 -12 -14 z" ${st}/><path d="M${x-7} 12 q3 -6 7 0 q3 -6 7 0" ${st}/>`,
+    x => `<path d="M${x-4} 3 h8 v6 q5 3 5 9 v12 h-18 v-12 q0 -6 5 -9 z" ${st}/><path d="M${x-5} 18 h10" ${st}/>`,
+    x => `<path d="M${x-14} 6 l26 24 M${x-9} 4 l24 24" ${st}/>`,
+    x => `<ellipse cx="${x}" cy="18" rx="13" ry="9" ${st}/><path d="M${x-9} 15 q9 -7 18 0" ${st}/>`,
+    x => `<circle cx="${x}" cy="17" r="11" ${st}/><path d="M${x-6} 13 h12 M${x-6} 18 h12 M${x-6} 23 h8" ${st}/>`
+  ];
+  return `<svg viewBox="0 0 300 34" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${icons.map((f, i) => f(28 + i * 41)).join('')}</svg>`;
+}
+
+// Roll grande cortado: nori + arroz, con espacio central para el pedido
+function bigRoll(){
+  return `<svg class="big" viewBox="-56 -56 112 112" aria-hidden="true">
+    <circle cx="4" cy="7" r="46" fill="rgba(0,0,0,.2)" filter="url(#blur)"/>
+    <circle r="47" fill="#1C211D"/><circle r="47" fill="none" stroke="#2E3530" stroke-width="1.5"/>
+    <circle r="41.5" fill="#F4EFE5"/>${grains(30, 40, 80, 33)}
+    <circle r="30" fill="#FBF8F1"/>
+  </svg>`;
+}
+
+// Mensaje de WhatsApp
+function buildMessage(){
+  const items = cartItems();
+  let msg = `*${NEGOCIO}* — Nuevo pedido 🍣\n\n`;
+  msg += `*Cliente:* ${state.name}\n*Modalidad:* ${state.mode}\n`;
+  if(state.mode === 'Delivery') msg += `*Dirección:* ${state.address}\n`;
+  msg += `*Pago:* ${state.pay}\n`;
+  MENU.forEach(m => {
+    const g = items.filter(x => x.cat === m.key);
+    if(!g.length) return;
+    msg += `\n*${m.step}*\n` + g.map(x => `• ${x.q}× ${x.name} (${x.unit}) — ${money(x.price * x.q)}`).join('\n') + '\n';
+  });
+  msg += `\n*TOTAL: ${money(total())}*`;
+  if(state.mode === 'Delivery') msg += `\n_Envío a confirmar_`;
+  if(state.notes) msg += `\n\n*Notas:* ${state.notes}`;
+  return msg;
+}
+
+$('#sendWa').onclick = () => {
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMessage())}`, '_blank');
+};
+$('#backEdit').onclick = () => {
+  $('#overlay').classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+// Inicio
+render();
+</script>
+</body>
+</html>
