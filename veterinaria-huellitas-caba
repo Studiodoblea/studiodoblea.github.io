@@ -1,6 +1,0 @@
-git init
-git add index.html vercel.json
-git commit -m "Veterinaria CABA con gato, turnos y ecommerce - WhatsApp 11 1111111111"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/veterinaria-huellitas-caba.git
-git push -u origin main
