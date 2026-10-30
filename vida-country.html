@@ -35,7 +35,7 @@ tailwind.config = { theme: { extend: {
 <div class="bg-oliva-800 text-crema-100 text-xs sm:text-sm">
   <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-4">
     <p>🚚 Envío a domicilio en CABA · Retiro sin cargo en Blanco Encalada 2331</p>
-    <a href="#" data-wa="Hola Vida Country! Quería hacer una consulta." class="wa-link hidden sm:inline font-semibold hover:underline">WhatsApp 11 3833-9967</a>
+    <a href="#" data-wa="Hola Vida Country! Quería hacer una consulta." class="wa-link hidden sm:inline font-semibold hover:underline">WhatsApp 11 7742-1267</a>
   </div>
 </div>
 
@@ -271,7 +271,7 @@ tailwind.config = { theme: { extend: {
       <ul class="mt-6 space-y-3">
         <li>📍 <strong>Blanco Encalada 2331</strong>, Belgrano, CABA</li>
         <li>📞 <strong>011 4780-1919</strong></li>
-        <li>💬 <strong>11 3833-9967</strong> (WhatsApp)</li>
+        <li>💬 <strong>11 7742-1267</strong> (WhatsApp)</li>
         <li>🕘 <span id="hours"></span></li>
       </ul>
       <div class="mt-6 flex flex-wrap gap-3">
@@ -316,7 +316,7 @@ tailwind.config = { theme: { extend: {
     </div>
     <div>
       <h3 class="font-extrabold text-crema-50 mb-3">Contacto</h3>
-      <p>Blanco Encalada 2331, CABA<br>011 4780-1919 · WhatsApp 11 3833-9967</p>
+      <p>Blanco Encalada 2331, CABA<br>011 4780-1919 · WhatsApp 11 7742-1267</p>
       <p class="mt-3"><strong class="text-crema-50">Medios de pago:</strong> efectivo y transferencia<span id="footMP"></span>.</p>
       <p class="mt-3 flex gap-3"><a id="igLink" target="_blank" rel="noopener" class="underline">Instagram</a><a id="fbLink" target="_blank" rel="noopener" class="underline">Facebook</a></p>
     </div>
@@ -375,7 +375,7 @@ tailwind.config = { theme: { extend: {
    CONFIGURACIÓN DEL NEGOCIO — editá estos valores
    ========================================================= */
 const CONFIG = {
-  WHATSAPP: '5491138339967',
+  WHATSAPP: '5491177421267',
   // Planilla de Google con los productos (la web la lee al abrir). Dejar vacío para usar el catálogo de este archivo.
   SHEET_ID: '1Z90Fqa7kAL381054zFFUmfrWt8RpY8l2DW4kbPQksdo',
   MP_LINK: '',                       // link de pago de Mercado Pago (opcional)
@@ -821,7 +821,7 @@ function submitOrder(e) {
     ${pay === 'mp' ? `<a href="${CONFIG.MP_LINK}" target="_blank" rel="noopener" class="mt-4 inline-block px-6 py-3 rounded-full bg-[#009ee3] text-white font-bold">Pagar con Mercado Pago</a><p class="text-xs mt-2">Preparamos el pedido cuando se acredite el pago.</p>` : ''}
     <p class="mt-5 text-sm">Para que lo recibamos, envianos el pedido por WhatsApp. Te respondemos confirmando precio, stock y ${deliveryVal() === 'envio' ? 'el horario de entrega' : 'cuándo podés retirarlo'}.</p>
     <a href="${waURL(msg)}" target="_blank" rel="noopener" class="mt-5 inline-block w-full py-3 rounded-full bg-[#1f8f4e] text-white font-bold">Enviar pedido por WhatsApp</a>
-    <p class="mt-3 text-xs text-oliva-900/60">Si no se abre WhatsApp, llamanos al 011 4780-1919 o escribinos al 11 3833-9967 con el número ${n}.</p>
+    <p class="mt-3 text-xs text-oliva-900/60">Si no se abre WhatsApp, llamanos al 011 4780-1919 o escribinos al 11 7742-1267 con el número ${n}.</p>
     <button data-close class="mt-6 font-bold text-oliva-600 underline">Seguir comprando</button>
   </div>`;
   state.submitting = false;
@@ -831,7 +831,7 @@ function submitOrder(e) {
 const seller = () => `${CONFIG.RAZON_SOCIAL || 'Dietética Vida Country'}${CONFIG.CUIT ? ' · CUIT ' + CONFIG.CUIT : ''} · Blanco Encalada 2331, CABA`;
 const POLICIES = {
   cambios: () => `<h2 class="font-serif text-2xl font-bold text-oliva-800">Cambios y devoluciones</h2>
-    <p>Si un producto llegó en mal estado, vencido o no es el que pediste, avisanos dentro de las 48 horas de recibido por WhatsApp (11 3833-9967) con tu número de pedido y una foto. Te lo cambiamos o te devolvemos el importe.</p>
+    <p>Si un producto llegó en mal estado, vencido o no es el que pediste, avisanos dentro de las 48 horas de recibido por WhatsApp (11 7742-1267) con tu número de pedido y una foto. Te lo cambiamos o te devolvemos el importe.</p>
     <p>Por tratarse de alimentos, no aceptamos cambios de productos abiertos o fraccionados en buen estado, salvo lo que establezca la normativa de defensa del consumidor.</p>
     <p class="text-xs text-oliva-900/60">Texto modelo. Revisalo con un profesional antes de publicar.</p>`,
   terminos: () => `<h2 class="font-serif text-2xl font-bold text-oliva-800">Términos y condiciones</h2>
